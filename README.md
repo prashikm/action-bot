@@ -11,7 +11,7 @@ This is a simple action bot that uses OpenAI's GPT-4 to assist customers with bo
 
 1. Clone the repository and navigate to the project directory.
 2. Install the required dependencies by running `npm install`.
-3. Create a `.env` file in the project root and add your OpenAI API key.
+3. Create a `.env` file in the project root and add your OpenAI API key with the `OPENAI_SECRET_KEY` variable.
 4. Start the server by running `npm start`.
 5. Open your browser and navigate to `http://localhost:3000`.
 6. Start interacting with the bot by typing in the chat box and pressing Enter.
