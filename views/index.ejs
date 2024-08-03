@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Action Bot</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/picnic" />
+  </head>
+  <body style="max-width: 448px; margin: 2rem auto">
+    <h2>Welcome to PageTurner Books</h2>
+
+    <div id="conversations">
+      <p>Hi, I'm an AI assistant for a bookstore. How can I help you?</p>
+    </div>
+
+    <p id="loading" style="display: none">generating response...</p>
+
+    <div id="form-container" style="display: none">
+      <form id="booking-form">
+        <input type="text" name="name" placeholder="Name" required />
+        <input type="email" name="email" placeholder="Email" required />
+        <button type="submit">Submit</button>
+      </form>
+      <button id="cancel-booking">Cancel</button>
+    </div>
+
+    <input
+      id="query"
+      type="text"
+      placeholder="start conversation..."
+      style="margin: 1rem 0"
+    />
+
+    <script>
+      const query = document.getElementById("query");
+      const conversations = document.getElementById("conversations");
+      const bookingForm = document.getElementById("booking-form");
+      const formContainer = document.getElementById("form-container");
+      const cancelBooking = document.getElementById("cancel-booking");
+      const loading = document.getElementById("loading");
+
+      cancelBooking.addEventListener("click", function () {
+        formContainer.style.display = "none";
+      });
+
+      bookingForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const name = event.target.name.value;
+        const email = event.target.email.value;
+
+        const request = await fetch("http://localhost:3000/book-meeting", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: name,
+            email: email,
+          }),
+        });
+
+        if (!request.ok) {
+          alert("Error: Failed to submit the booking form.");
+          return;
+        }
+
+        const data = await request.json();
+
+        if (data.success) {
+          alert("Booking successful!");
+          formContainer.style.display = "none";
+        }
+      });
+
+      query.addEventListener("keyup", async function (event) {
+        event.preventDefault();
+
+        if (event.keyCode === 13) {
+          const p = document.createElement("p");
+          p.innerHTML = query.value;
+          conversations.appendChild(p);
+
+          loading.style.display = "block";
+
+          const request = await fetch("http://localhost:3000/chat", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              query: query.value,
+            }),
+          });
+
+          if (!request.ok) {
+            alert("Error: Failed to fetch data from the server.");
+            return;
+          }
+
+          const data = await request.json();
+          console.log(data);
+
+          if (data.intent) {
+            formContainer.style.display = "block";
+          }
+
+          const responseP = document.createElement("p");
+          responseP.innerHTML = data.response;
+          conversations.appendChild(responseP);
+
+          loading.style.display = "none";
+          query.value = "";
+        }
+      });
+    </script>
+  </body>
+</html>
