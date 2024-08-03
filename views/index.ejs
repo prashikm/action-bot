@@ -55,8 +55,8 @@
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            name: name,
-            email: email,
+            name,
+            email,
           }),
         });
 
@@ -99,7 +99,6 @@
           }
 
           const data = await request.json();
-          console.log(data);
 
           if (data.intent) {
             formContainer.style.display = "block";
